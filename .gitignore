@@ -4,5 +4,5 @@ node_modules/
 .idea/
 .vscode/
 backup/
-src/CubismSdkForWeb-*/
+# src/CubismSdkForWeb-*/
 build/CubismSdkForWeb-*/
