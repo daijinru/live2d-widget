@@ -6,3 +6,4 @@ export * from './message.js';
 export * from './model.js';
 export * from './utils.js';
 export * from './widget.js';
+export * from './conversation.js';

@@ -33,32 +33,64 @@ function showMessage(
   priority: number,
   override: boolean = true
 ) {
-  let currentPriority = parseInt(sessionStorage.getItem('waifu-message-priority'), 10);
-  if (isNaN(currentPriority)) {
-    currentPriority = 0;
-  }
-  if (
-    !text ||
-    (override && currentPriority > priority) ||
-    (!override && currentPriority >= priority)
-  )
-    return;
-  if (messageTimer) {
-    clearTimeout(messageTimer);
-    messageTimer = null;
-  }
-  text = randomSelection(text) as string;
-  sessionStorage.setItem('waifu-message-priority', String(priority));
+  // let currentPriority = parseInt(sessionStorage.getItem('waifu-message-priority'), 10);
+  // if (isNaN(currentPriority)) {
+  //   currentPriority = 0;
+  // }
+  // if (
+  //   !text ||
+  //   (override && currentPriority > priority) ||
+  //   (!override && currentPriority >= priority)
+  // )
+  //   return;
+  // if (messageTimer) {
+  //   clearTimeout(messageTimer);
+  //   messageTimer = null;
+  // }
+  // text = randomSelection(text) as string;
+  // sessionStorage.setItem('waifu-message-priority', String(priority));
+  // // 从 shadow dom 中获取 tips 元素
+  // const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+  // if (!shadowRoot) return;
+  // const tips = shadowRoot.getElementById('waifu-tips');
+  // tips.innerHTML = text;
+  // tips.classList.add('waifu-tips-active');
+  // messageTimer = setTimeout(() => {
+  //   sessionStorage.removeItem('waifu-message-priority');
+  //   tips.classList.remove('waifu-tips-active');
+  // }, timeout);
+}
+
+/**
+ * Display or append SSE message in waifu message bubble.
+ * @param {string} text - Text fragment to display or append.
+ * @param {string} id - Unique identifier for this SSE message session.
+ */
+function showSSEMessage(text: string, id: string) {
   // 从 shadow dom 中获取 tips 元素
   const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
   if (!shadowRoot) return;
   const tips = shadowRoot.getElementById('waifu-tips');
-  tips.innerHTML = text;
-  tips.classList.add('waifu-tips-active');
-  messageTimer = setTimeout(() => {
-    sessionStorage.removeItem('waifu-message-priority');
+  if (!tips) return;
+
+  // 检查当前的 sse id
+  const currentSSEId = tips.getAttribute('data-sse-id');
+  if (currentSSEId === id) {
+    // 同一个 id，追加文本
+    tips.innerHTML += text;
+  } else {
+    // 新的 id，销毁前一个消息
     tips.classList.remove('waifu-tips-active');
-  }, timeout);
+    tips.removeAttribute('data-sse-id');
+    // 重置内容
+    tips.innerHTML = text;
+    tips.setAttribute('data-sse-id', id);
+    // 激活新消息
+    setTimeout(() => {
+      tips.classList.add('waifu-tips-active');
+    }, 10);
+  }
+  // tips.classList.add('waifu-tips-active');
 }
 
 /**
@@ -97,4 +129,4 @@ function i18n(template: string, ...args: string[]) {
   });
 }
 
-export { showMessage, welcomeMessage, i18n, Time };
+export { showMessage, showSSEMessage, welcomeMessage, i18n, Time };

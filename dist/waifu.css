@@ -59,7 +59,7 @@
 	min-height: 70px;
 	opacity: 0;
 	overflow: hidden;
-	padding: 5px 10px;
+	padding: 5px 22px;
 	position: absolute;
 	z-index: 10000;
 	right: 0;
@@ -68,6 +68,8 @@
 	transition: opacity 1s;
 	width: 250px;
 	word-break: break-all;
+
+	/* opacity: 1; */
 }
 
 #waifu-tips.waifu-tips-active {
@@ -77,6 +79,26 @@
 
 #waifu-tips span {
 	color: #0099cc;
+}
+
+/* 关闭按钮伪元素 */
+#waifu-tips::after {
+    content: '✕';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    color: #333;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+    transition: background 0.2s;
 }
 
 #live2d {

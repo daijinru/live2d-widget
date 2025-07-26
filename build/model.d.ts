@@ -37,7 +37,7 @@ declare class ModelManager {
     get modelTexturesId(): number;
     resetCanvas(): void;
     fetchWithCache(url: string): Promise<any>;
-    checkModelVersion(modelSetting: any): 2 | 3;
+    checkModelVersion(modelSetting: any): 3 | 2;
     loadLive2D(modelSettingPath: string, modelSetting: object): Promise<void>;
     loadTextureCache(modelName: string): Promise<any[]>;
     loadModel(message: string | string[]): Promise<void>;

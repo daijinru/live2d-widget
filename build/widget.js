@@ -1,10 +1,12 @@
 import { ModelManager } from './model.js';
-import { showMessage, welcomeMessage } from './message.js';
+import { showMessage, showSSEMessage } from './message.js';
 import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
+import { getKeywordClassification } from './conversation.js';
 function registerEventListener(tips) {
+    var _a;
     let userAction = false;
     let userActionTimer;
     const messageArray = tips.message.default;
@@ -79,6 +81,20 @@ function registerEventListener(tips) {
         if (!document.hidden)
             showMessage(tips.message.visibilitychange, 6000, 9);
     });
+    const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
+    shadowRoot
+        .getElementById('waifu-tips')
+        .addEventListener('click', function (e) {
+        const tool = this;
+        const rect = tool.getBoundingClientRect();
+        if (e.clientX >= rect.right - 25 &&
+            e.clientX <= rect.right - 5 &&
+            e.clientY >= rect.top + 5 &&
+            e.clientY <= rect.top + 25) {
+            shadowRoot
+                .getElementById('waifu-tips').classList.remove('waifu-tips-active');
+        }
+    });
 }
 function getShadowRootMounted() {
     var _a;
@@ -110,7 +126,11 @@ async function loadWidget(config) {
         tips = await response.json();
         models = tips.models;
         registerEventListener(tips);
-        showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
+        getKeywordClassification(text => {
+            showSSEMessage(text, 'aaa');
+        }, text => {
+            showSSEMessage(text, 'bbb');
+        });
     }
     const model = await ModelManager.initCheck(config, models);
     await model.loadModel('');

@@ -4,13 +4,13 @@
  */
 
 import { ModelManager, Config, ModelList } from './model.js';
-import { showMessage, welcomeMessage, Time } from './message.js';
+import { showMessage, showSSEMessage, welcomeMessage, Time } from './message.js';
 import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
 import { fa_child } from './icons.js';
-
+import { getKeywordClassification } from './conversation.js';
 interface Tips {
   /**
    * Default message configuration.
@@ -166,6 +166,25 @@ function registerEventListener(tips: Tips) {
     if (!document.hidden)
       showMessage(tips.message.visibilitychange, 6000, 9);
   });
+
+  const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+  shadowRoot
+    .getElementById('waifu-tips')
+    .addEventListener('click', function(e) {
+      const tool = this
+      const rect = tool.getBoundingClientRect();
+      // 伪元素区域（右上角20x20px）
+      if (
+        e.clientX >= rect.right - 25 &&
+        e.clientX <= rect.right - 5 &&
+        e.clientY >= rect.top + 5 &&
+        e.clientY <= rect.top + 25
+      ) {
+        // tool.style.display = 'none';
+        shadowRoot
+          .getElementById('waifu-tips').classList.remove('waifu-tips-active');
+      }
+    })
 }
 
 /** 获取 shadow dom 容器中的挂载点 */
@@ -207,7 +226,14 @@ async function loadWidget(config: Config) {
     tips = await response.json();
     models = tips.models;
     registerEventListener(tips);
-    showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
+
+    getKeywordClassification(text => {
+      showSSEMessage(text, 'aaa');
+    }, text => {
+      showSSEMessage(text, 'bbb');
+    })
+    
+    // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
   }
   const model = await ModelManager.initCheck(config, models);
   await model.loadModel('');

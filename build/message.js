@@ -1,31 +1,27 @@
-import { randomSelection } from './utils.js';
 let messageTimer = null;
 function showMessage(text, timeout, priority, override = true) {
+}
+function showSSEMessage(text, id) {
     var _a;
-    let currentPriority = parseInt(sessionStorage.getItem('waifu-message-priority'), 10);
-    if (isNaN(currentPriority)) {
-        currentPriority = 0;
-    }
-    if (!text ||
-        (override && currentPriority > priority) ||
-        (!override && currentPriority >= priority))
-        return;
-    if (messageTimer) {
-        clearTimeout(messageTimer);
-        messageTimer = null;
-    }
-    text = randomSelection(text);
-    sessionStorage.setItem('waifu-message-priority', String(priority));
     const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
     if (!shadowRoot)
         return;
     const tips = shadowRoot.getElementById('waifu-tips');
-    tips.innerHTML = text;
-    tips.classList.add('waifu-tips-active');
-    messageTimer = setTimeout(() => {
-        sessionStorage.removeItem('waifu-message-priority');
+    if (!tips)
+        return;
+    const currentSSEId = tips.getAttribute('data-sse-id');
+    if (currentSSEId === id) {
+        tips.innerHTML += text;
+    }
+    else {
         tips.classList.remove('waifu-tips-active');
-    }, timeout);
+        tips.removeAttribute('data-sse-id');
+        tips.innerHTML = text;
+        tips.setAttribute('data-sse-id', id);
+        setTimeout(() => {
+            tips.classList.add('waifu-tips-active');
+        }, 10);
+    }
 }
 function welcomeMessage(time, welcomeTemplate, referrerTemplate) {
     if (location.pathname === '/') {
@@ -53,4 +49,4 @@ function i18n(template, ...args) {
         return (_a = args[i]) !== null && _a !== void 0 ? _a : '';
     });
 }
-export { showMessage, welcomeMessage, i18n };
+export { showMessage, showSSEMessage, welcomeMessage, i18n };
