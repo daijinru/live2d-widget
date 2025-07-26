@@ -239,7 +239,8 @@ export class AppDelegate extends LAppDelegate {
     this._subdelegates.prepareCapacity(LAppDefine.CanvasNum);
 
     // Get the live2d canvas element from the page
-    const canvas = document.getElementById('live2d');
+    const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+    const canvas = shadowRoot.getElementById('live2d');
     this._canvases.pushBack(canvas);
 
     // Set canvas style size to match actual size

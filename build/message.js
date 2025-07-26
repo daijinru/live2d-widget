@@ -1,6 +1,7 @@
 import { randomSelection } from './utils.js';
 let messageTimer = null;
 function showMessage(text, timeout, priority, override = true) {
+    var _a;
     let currentPriority = parseInt(sessionStorage.getItem('waifu-message-priority'), 10);
     if (isNaN(currentPriority)) {
         currentPriority = 0;
@@ -15,7 +16,10 @@ function showMessage(text, timeout, priority, override = true) {
     }
     text = randomSelection(text);
     sessionStorage.setItem('waifu-message-priority', String(priority));
-    const tips = document.getElementById('waifu-tips');
+    const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
+    if (!shadowRoot)
+        return;
+    const tips = shadowRoot.getElementById('waifu-tips');
     tips.innerHTML = text;
     tips.classList.add('waifu-tips-active');
     messageTimer = setTimeout(() => {

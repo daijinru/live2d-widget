@@ -92,20 +92,8 @@ class ToolsManager {
         };
     }
     registerTools() {
-        var _a;
         if (!Array.isArray(this.config.tools)) {
             this.config.tools = Object.keys(this.tools);
-        }
-        for (const toolName of this.config.tools) {
-            if (this.tools[toolName]) {
-                const { icon, callback } = this.tools[toolName];
-                const element = document.createElement('span');
-                element.id = `waifu-tool-${toolName}`;
-                element.innerHTML = icon;
-                (_a = document
-                    .getElementById('waifu-tool')) === null || _a === void 0 ? void 0 : _a.insertAdjacentElement('beforeend', element);
-                element.addEventListener('click', callback);
-            }
         }
     }
 }

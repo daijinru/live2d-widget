@@ -4,7 +4,6 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { fa_child } from './icons.js';
 function registerEventListener(tips) {
     let userAction = false;
     let userActionTimer;
@@ -81,17 +80,29 @@ function registerEventListener(tips) {
             showMessage(tips.message.visibilitychange, 6000, 9);
     });
 }
+function getShadowRootMounted() {
+    var _a;
+    const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
+    if (shadowRoot) {
+        const mounted = shadowRoot.getElementById('wenko_wifu');
+        if (mounted) {
+            return mounted;
+        }
+    }
+    return null;
+}
 async function loadWidget(config) {
     var _a;
     localStorage.removeItem('waifu-display');
     sessionStorage.removeItem('waifu-message-priority');
-    document.body.insertAdjacentHTML('beforeend', `<div id="waifu">
-       <div id="waifu-tips"></div>
-       <div id="waifu-canvas">
-         <canvas id="live2d" width="800" height="800"></canvas>
-       </div>
-       <div id="waifu-tool"></div>
-     </div>`);
+    const mounted = getShadowRootMounted();
+    mounted.insertAdjacentHTML('beforeend', `<div id="waifu">
+      <div id="waifu-tips"></div>
+      <div id="waifu-canvas">
+        <canvas id="live2d" width="800" height="800"></canvas>
+      </div>
+      <div id="waifu-tool"></div>
+    </div>`);
     let models = [];
     let tips;
     if (config.waifuPath) {
@@ -114,35 +125,6 @@ function initWidget(config) {
         return;
     }
     logger.setLevel(config.logLevel);
-    document.body.insertAdjacentHTML('beforeend', `<div id="waifu-toggle">
-       ${fa_child}
-     </div>`);
-    const toggle = document.getElementById('waifu-toggle');
-    toggle === null || toggle === void 0 ? void 0 : toggle.addEventListener('click', () => {
-        var _a;
-        toggle === null || toggle === void 0 ? void 0 : toggle.classList.remove('waifu-toggle-active');
-        if (toggle === null || toggle === void 0 ? void 0 : toggle.getAttribute('first-time')) {
-            loadWidget(config);
-            toggle === null || toggle === void 0 ? void 0 : toggle.removeAttribute('first-time');
-        }
-        else {
-            localStorage.removeItem('waifu-display');
-            (_a = document.getElementById('waifu')) === null || _a === void 0 ? void 0 : _a.classList.remove('waifu-hidden');
-            setTimeout(() => {
-                var _a;
-                (_a = document.getElementById('waifu')) === null || _a === void 0 ? void 0 : _a.classList.add('waifu-active');
-            }, 0);
-        }
-    });
-    if (localStorage.getItem('waifu-display') &&
-        Date.now() - Number(localStorage.getItem('waifu-display')) <= 86400000) {
-        toggle === null || toggle === void 0 ? void 0 : toggle.setAttribute('first-time', 'true');
-        setTimeout(() => {
-            toggle === null || toggle === void 0 ? void 0 : toggle.classList.add('waifu-toggle-active');
-        }, 0);
-    }
-    else {
-        loadWidget(config);
-    }
+    loadWidget(config);
 }
 export { initWidget };

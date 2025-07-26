@@ -181,7 +181,8 @@ class ModelManager {
   }
 
   resetCanvas() {
-    document.getElementById('waifu-canvas').innerHTML = '<canvas id="live2d" width="800" height="800"></canvas>';
+    const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+    shadowRoot.getElementById('waifu-canvas').innerHTML = '<canvas id="live2d" width="800" height="800"></canvas>';
   }
 
   async fetchWithCache(url: string) {

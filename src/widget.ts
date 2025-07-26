@@ -168,6 +168,18 @@ function registerEventListener(tips: Tips) {
   });
 }
 
+/** 获取 shadow dom 容器中的挂载点 */
+function getShadowRootMounted() {
+  const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+  if (shadowRoot) {
+    const mounted = shadowRoot.getElementById('wenko_wifu');
+    if (mounted) {
+      return mounted;
+    }
+  }
+  return null;
+}
+
 /**
  * Load the waifu widget.
  * @param {Config} config - Waifu configuration.
@@ -175,15 +187,18 @@ function registerEventListener(tips: Tips) {
 async function loadWidget(config: Config) {
   localStorage.removeItem('waifu-display');
   sessionStorage.removeItem('waifu-message-priority');
-  document.body.insertAdjacentHTML(
+  // 挂载到 shadow dom 容器
+  // const shadowRoot = document.getElementById(config.mounted)?.shadowRoot;
+  const mounted = getShadowRootMounted();
+  mounted.insertAdjacentHTML(
     'beforeend',
     `<div id="waifu">
-       <div id="waifu-tips"></div>
-       <div id="waifu-canvas">
-         <canvas id="live2d" width="800" height="800"></canvas>
-       </div>
-       <div id="waifu-tool"></div>
-     </div>`,
+      <div id="waifu-tips"></div>
+      <div id="waifu-canvas">
+        <canvas id="live2d" width="800" height="800"></canvas>
+      </div>
+      <div id="waifu-tool"></div>
+    </div>`,
   );
   let models: ModelList[] = [];
   let tips: Tips | null;
@@ -211,37 +226,43 @@ function initWidget(config: string | Config) {
     return;
   }
   logger.setLevel(config.logLevel);
-  document.body.insertAdjacentHTML(
-    'beforeend',
-    `<div id="waifu-toggle">
-       ${fa_child}
-     </div>`,
-  );
-  const toggle = document.getElementById('waifu-toggle');
-  toggle?.addEventListener('click', () => {
-    toggle?.classList.remove('waifu-toggle-active');
-    if (toggle?.getAttribute('first-time')) {
-      loadWidget(config as Config);
-      toggle?.removeAttribute('first-time');
-    } else {
-      localStorage.removeItem('waifu-display');
-      document.getElementById('waifu')?.classList.remove('waifu-hidden');
-      setTimeout(() => {
-        document.getElementById('waifu')?.classList.add('waifu-active');
-      }, 0);
-    }
-  });
-  if (
-    localStorage.getItem('waifu-display') &&
-    Date.now() - Number(localStorage.getItem('waifu-display')) <= 86400000
-  ) {
-    toggle?.setAttribute('first-time', 'true');
-    setTimeout(() => {
-      toggle?.classList.add('waifu-toggle-active');
-    }, 0);
-  } else {
-    loadWidget(config as Config);
-  }
+
+  loadWidget(config as Config);
+
+  // const mounted = getShadowRootMounted();
+  // console.info('>>> mounted', mounted);
+  // mounted.insertAdjacentHTML(
+  //   'beforeend',
+  //   `<div id="waifu-toggle">
+  //      ${fa_child}
+  //    </div>`,
+  // );
+
+  // const toggle = document.getElementById('waifu-toggle');
+  // toggle?.addEventListener('click', () => {
+  //   toggle?.classList.remove('waifu-toggle-active');
+  //   if (toggle?.getAttribute('first-time')) {
+  //     loadWidget(config as Config);
+  //     toggle?.removeAttribute('first-time');
+  //   } else {
+  //     localStorage.removeItem('waifu-display');
+  //     document.getElementById('waifu')?.classList.remove('waifu-hidden');
+  //     setTimeout(() => {
+  //       document.getElementById('waifu')?.classList.add('waifu-active');
+  //     }, 0);
+  //   }
+  // });
+  // if (
+  //   localStorage.getItem('waifu-display') &&
+  //   Date.now() - Number(localStorage.getItem('waifu-display')) <= 86400000
+  // ) {
+  //   toggle?.setAttribute('first-time', 'true');
+  //   setTimeout(() => {
+  //     toggle?.classList.add('waifu-toggle-active');
+  //   }, 0);
+  // } else {
+  //   loadWidget(config as Config);
+  // }
 }
 
 export { initWidget, Tips };

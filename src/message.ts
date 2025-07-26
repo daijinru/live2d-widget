@@ -49,7 +49,10 @@ function showMessage(
   }
   text = randomSelection(text) as string;
   sessionStorage.setItem('waifu-message-priority', String(priority));
-  const tips = document.getElementById('waifu-tips')!;
+  // 从 shadow dom 中获取 tips 元素
+  const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+  if (!shadowRoot) return;
+  const tips = shadowRoot.getElementById('waifu-tips');
   tips.innerHTML = text;
   tips.classList.add('waifu-tips-active');
   messageTimer = setTimeout(() => {

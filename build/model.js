@@ -93,7 +93,9 @@ class ModelManager {
         return this._modelTexturesId;
     }
     resetCanvas() {
-        document.getElementById('waifu-canvas').innerHTML = '<canvas id="live2d" width="800" height="800"></canvas>';
+        var _a;
+        const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
+        shadowRoot.getElementById('waifu-canvas').innerHTML = '<canvas id="live2d" width="800" height="800"></canvas>';
     }
     async fetchWithCache(url) {
         let result;

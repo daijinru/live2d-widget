@@ -6,7 +6,7 @@
 // Recommended to use absolute path for live2d_path parameter
 // live2d_path 参数建议使用绝对路径
 // const live2d_path = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.0-rc.6/dist/';
-const live2d_path = '/';
+const live2d_path = 'http://localhost:8080/live2d/live2d-widget/dist/';
 
 // Method to encapsulate asynchronous resource loading
 // 封装异步加载资源的方法
@@ -27,7 +27,13 @@ function loadExternalResource(url, type) {
     if (tag) {
       tag.onload = () => resolve(url);
       tag.onerror = () => reject(url);
-      document.head.appendChild(tag);
+
+      // 将会被挂载到 wenko 插件提供的 shadow dom 容器
+      const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+      if (shadowRoot) {
+        // 将 tag 插入到 shadowRoot 最前面
+        shadowRoot.insertBefore(tag, shadowRoot.firstChild);
+      }
     }
   });
 }
@@ -54,10 +60,11 @@ function loadExternalResource(url, type) {
   ]);
   // For detailed usage of configuration options, see README.en.md
   // 配置选项的具体用法见 README.md
+  // 将会被挂载到 wenko 插件提供的 shadow dom 容器
   initWidget({
     waifuPath: live2d_path + 'waifu-tips.json',
     // cdnPath: 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/',
-    // cdnPath: 'http://10.17.11.83:8002/',
+    cdnPath: 'http://127.0.0.1:8080/live2d/',
     cubism2Path: live2d_path + 'live2d.min.js',
     // cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
     cubism5Path: live2d_path + 'live2dcubismcore.min.js',

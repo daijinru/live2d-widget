@@ -136,21 +136,22 @@ class ToolsManager {
     if (!Array.isArray(this.config.tools)) {
       this.config.tools = Object.keys(this.tools);
     }
-    for (const toolName of this.config.tools) {
-      if (this.tools[toolName]) {
-        const { icon, callback } = this.tools[toolName];
-        const element = document.createElement('span');
-        element.id = `waifu-tool-${toolName}`;
-        element.innerHTML = icon;
-        document
-          .getElementById('waifu-tool')
-          ?.insertAdjacentElement(
-            'beforeend',
-            element,
-          );
-        element.addEventListener('click', callback);
-      }
-    }
+    // for (const toolName of this.config.tools) {
+    //   if (this.tools[toolName]) {
+    //     const { icon, callback } = this.tools[toolName];
+    //     const element = document.createElement('span');
+    //     element.id = `waifu-tool-${toolName}`;
+    //     element.innerHTML = icon;
+    //     const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
+    //     shadowRoot
+    //       .getElementById('waifu-tool')
+    //       ?.insertAdjacentElement(
+    //         'beforeend',
+    //         element,
+    //       );
+    //     element.addEventListener('click', callback);
+    //   }
+    // }
   }
 }
 

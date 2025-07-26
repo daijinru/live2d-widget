@@ -151,9 +151,11 @@ export class AppDelegate extends LAppDelegate {
         });
     }
     initializeSubdelegates() {
+        var _a;
         this._canvases.prepareCapacity(LAppDefine.CanvasNum);
         this._subdelegates.prepareCapacity(LAppDefine.CanvasNum);
-        const canvas = document.getElementById('live2d');
+        const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
+        const canvas = shadowRoot.getElementById('live2d');
         this._canvases.pushBack(canvas);
         canvas.style.width = canvas.width;
         canvas.style.height = canvas.height;
