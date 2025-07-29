@@ -40,8 +40,8 @@ const getKeywordClassification = (callback, loadingCallback) => {
                     const payload = data.payload;
                     if (payload.type !== 'text')
                         return;
-                    out += payload.payload.content;
-                    callback(payload.payload.content);
+                    out += payload.content;
+                    callback(payload.content);
                 }
                 catch (error) {
                     console.error(error);
