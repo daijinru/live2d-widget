@@ -30,4 +30,22 @@ export const generateMsgId = () => {
         return v.toString(16);
     });
 };
-export { randomSelection, loadExternalResource, randomOtherOption };
+const LocalStoreage_Key = 'live2d-widget';
+export const setLocalStorage = (key, value, expire) => {
+    const data = {
+        value,
+        expire: Date.now() + expire * 1000,
+    };
+    localStorage.setItem(`${LocalStoreage_Key}-${key}`, JSON.stringify(data));
+};
+export const getLocalStorage = (key) => {
+    const data = localStorage.getItem(`${LocalStoreage_Key}-${key}`);
+    if (data) {
+        const { value, expire } = JSON.parse(data);
+        if (Date.now() < expire) {
+            return value;
+        }
+    }
+    return null;
+};
+export { randomSelection, loadExternalResource, randomOtherOption, };

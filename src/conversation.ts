@@ -1,13 +1,21 @@
 // @ts-ignore
 import { fetchEventSource } from "https://esm.sh/@microsoft/fetch-event-source";
 import { generateMsgId } from "./utils.js";
+import { getLocalStorage, setLocalStorage } from "./utils.js";
 
 const getKeywordClassification = (callback, loadingCallback?) => {
+  const cache = getLocalStorage('keyword_classification')
+  if (cache) {
+    callback(cache)
+    return
+  }
+
   // 每秒向 loadingCallback 发送一个 .
   let interval = setInterval(() => {
     loadingCallback('.')
   }, 1000)
 
+  let out = ''
   fetchEventSource('http://localhost:8080/task', {
     method: 'POST',
     headers: {
@@ -28,15 +36,17 @@ const getKeywordClassification = (callback, loadingCallback?) => {
       }
       try {
         const parsed = JSON.parse(line.data)
-        console.log('<intent parsed>', parsed)
+        // console.log('<intent parsed>', parsed)
         const payload = parsed.payload
         if (payload.type !== 'text') return
+        out += payload.payload.content
         callback(payload.payload.content)
       } catch (error) {
         console.error(error)
       }
     },
     onclose: () => {
+      setLocalStorage('keyword_classification', out, 60 * 60 * 12)
     },
     onerror: (err) => {
       console.log('error', err)

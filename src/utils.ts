@@ -50,4 +50,40 @@ export const generateMsgId = () => {
   });
 }
 
-export { randomSelection, loadExternalResource, randomOtherOption };
+const LocalStoreage_Key = 'live2d-widget';
+/**
+ * 通过 localStorage 存储对象，并设置过期时间，如果过期则返回 null
+ * @param {string} key - 存储的键名
+ * @param {any} value - 存储的值
+ * @param {number} expire - 过期时间，单位为秒
+ * @returns {any} 存储的值
+ */
+export const setLocalStorage = (key: string, value: any, expire: number) => {
+  const data = {
+    value,
+    expire: Date.now() + expire * 1000,
+  };
+  localStorage.setItem(`${LocalStoreage_Key}-${key}`, JSON.stringify(data));
+}
+
+/**
+ * 通过 localStorage 获取对象，如果过期则返回 null
+ * @param {string} key - 存储的键名
+ * @returns {any} 存储的值
+ */
+export const getLocalStorage = (key: string) => {
+  const data = localStorage.getItem(`${LocalStoreage_Key}-${key}`);
+  if (data) {
+    const { value, expire } = JSON.parse(data);
+    if (Date.now() < expire) {
+      return value;
+    }
+  }
+  return null;
+}
+
+export {
+  randomSelection,
+  loadExternalResource,
+  randomOtherOption,
+};
