@@ -10,7 +10,11 @@ import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
 import { fa_child } from './icons.js';
-import { getKeywordClassification } from './conversation.js';
+import {
+  getKeywordClassification,
+  getSearch,
+  saveText,
+} from './conversation.js';
 interface Tips {
   /**
    * Default message configuration.
@@ -167,6 +171,22 @@ function registerEventListener(tips: Tips) {
       showMessage(tips.message.visibilitychange, 6000, 9);
   });
 
+  // 监听自定义事件 wenko-highlight
+  window.addEventListener('wenko-highlight', (event: any) => {
+    let text = event.detail
+    // TODO
+    text = `解析此文本。
+请判断是否代码类型，如果是，走以下判断：
+1. 如果是代码报错，请尝试解析并给出解决办法；
+2. 如果是普通代码，请解释其意义。
+目标解析内容：${text}`
+    getKeywordClassification(text, (str) => {
+      showSSEMessage(str, 'wenko-keyword_classification');      
+    }, str => {
+      showSSEMessage(str, 'wenko-keyword_classification-loading');
+    })
+  });
+
   const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
   shadowRoot
     .getElementById('waifu-tips')
@@ -227,11 +247,11 @@ async function loadWidget(config: Config) {
     models = tips.models;
     registerEventListener(tips);
 
-    getKeywordClassification(text => {
-      showSSEMessage(text, 'aaa');
-    }, text => {
-      showSSEMessage(text, 'bbb');
-    })
+    // getKeywordClassification(text => {
+    //   showSSEMessage(text, 'aaa');
+    // }, text => {
+    //   showSSEMessage(text, 'bbb');
+    // })
     
     // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
   }

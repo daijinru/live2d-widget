@@ -4,7 +4,7 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { getKeywordClassification } from './conversation.js';
+import { getKeywordClassification, } from './conversation.js';
 function registerEventListener(tips) {
     var _a;
     let userAction = false;
@@ -81,6 +81,19 @@ function registerEventListener(tips) {
         if (!document.hidden)
             showMessage(tips.message.visibilitychange, 6000, 9);
     });
+    window.addEventListener('wenko-highlight', (event) => {
+        let text = event.detail;
+        text = `解析此文本。
+请判断是否代码类型，如果是，走以下判断：
+1. 如果是代码报错，请尝试解析并给出解决办法；
+2. 如果是普通代码，请解释其意义。
+目标解析内容：${text}`;
+        getKeywordClassification(text, (str) => {
+            showSSEMessage(str, 'wenko-keyword_classification');
+        }, str => {
+            showSSEMessage(str, 'wenko-keyword_classification-loading');
+        });
+    });
     const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
     shadowRoot
         .getElementById('waifu-tips')
@@ -126,11 +139,6 @@ async function loadWidget(config) {
         tips = await response.json();
         models = tips.models;
         registerEventListener(tips);
-        getKeywordClassification(text => {
-            showSSEMessage(text, 'aaa');
-        }, text => {
-            showSSEMessage(text, 'bbb');
-        });
     }
     const model = await ModelManager.initCheck(config, models);
     await model.loadModel('');
