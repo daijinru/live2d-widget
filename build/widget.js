@@ -4,7 +4,7 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { getKeywordClassification, } from './conversation.js';
+import { getKanbanDaily, } from './conversation.js';
 function registerEventListener(tips) {
     var _a;
     let userAction = false;
@@ -50,22 +50,46 @@ function registerEventListener(tips) {
             return;
         }
     });
-    window.addEventListener('click', (event) => {
-        var _a;
-        for (let { selector, text } of tips.click) {
-            if (!((_a = event.target) === null || _a === void 0 ? void 0 : _a.closest(selector)))
-                continue;
-            text = randomSelection(text);
-            text = text.replace('{text}', event.target.innerText);
-            showMessage(text, 4000, 8);
+    let dblclickLoading = false;
+    window.addEventListener('dblclick', (event) => {
+        console.info('>>> dblclick', event);
+        const target = event.target;
+        if (!target)
             return;
+        let isInContainer = false;
+        if (target.closest) {
+            isInContainer = !!target.closest('#WENKO__CONTAINER-ROOT');
         }
+        else {
+            let current = target;
+            while (current) {
+                if (current.id === 'WENKO__CONTAINER-ROOT') {
+                    isInContainer = true;
+                    break;
+                }
+                current = current.parentElement;
+            }
+        }
+        if (!isInContainer)
+            return;
+        if (dblclickLoading)
+            return;
+        dblclickLoading = true;
+        getKanbanDaily('随便说点什么，冷笑话也行', str => {
+            showSSEMessage(str, 'wenko-kanban_daily');
+        }, str => {
+            showSSEMessage(str, 'wenko-kanban_daily-loading');
+        }, () => {
+            dblclickLoading = false;
+        });
     });
     window.addEventListener('live2d:hoverbody', () => {
+        console.info('>>> live2d:hoverbody');
         const text = randomSelection(tips.message.hoverBody);
         showMessage(text, 4000, 8, false);
     });
     window.addEventListener('live2d:tapbody', () => {
+        console.info('>>> live2d:tapbody');
         const text = randomSelection(tips.message.tapBody);
         showMessage(text, 4000, 9);
     });
@@ -88,7 +112,8 @@ function registerEventListener(tips) {
 1. 如果是代码报错，请尝试解析并给出解决办法；
 2. 如果是普通代码，请解释其意义。
 目标解析内容：${text}`;
-        getKeywordClassification(text, (str) => {
+        return;
+        getKanbanDaily(text, (str) => {
             showSSEMessage(str, 'wenko-keyword_classification');
         }, str => {
             showSSEMessage(str, 'wenko-keyword_classification-loading');

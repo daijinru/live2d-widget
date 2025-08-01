@@ -1,4 +1,4 @@
-export declare const getKeywordClassification: (text: any, callback: any, loadingCallback?: any) => void;
+export declare const getKanbanDaily: (text: any, callback: any, loadingCallback?: any, doneCallback?: any) => void;
 export type WeightedText = {
     Text: string;
     Weight: number;

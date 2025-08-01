@@ -1,7 +1,6 @@
 import { fetchEventSource } from "https://esm.sh/@microsoft/fetch-event-source";
 import { generateMsgId } from "./utils.js";
-import { setLocalStorage } from "./utils.js";
-export const getKeywordClassification = (text, callback, loadingCallback) => {
+export const getKanbanDaily = (text, callback, loadingCallback, doneCallback) => {
     let interval = setInterval(() => {
         loadingCallback('.');
     }, 1000);
@@ -14,7 +13,7 @@ export const getKeywordClassification = (text, callback, loadingCallback) => {
             },
             body: JSON.stringify({
                 id: generateMsgId(),
-                text: '[keyword_classification]' + text,
+                text,
             }),
             onopen: (res) => {
                 console.log('open', res);
@@ -43,7 +42,7 @@ export const getKeywordClassification = (text, callback, loadingCallback) => {
                 }
             },
             onclose: () => {
-                setLocalStorage('keyword_classification', out, 60 * 60 * 12);
+                doneCallback && doneCallback();
             },
             onerror: (err) => {
                 console.log('error', err);

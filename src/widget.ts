@@ -11,7 +11,7 @@ import logger from './logger.js';
 import registerDrag from './drag.js';
 import { fa_child } from './icons.js';
 import {
-  getKeywordClassification,
+  getKanbanDaily,
   getSearch,
   saveText,
 } from './conversation.js';
@@ -136,24 +136,51 @@ function registerEventListener(tips: Tips) {
       return;
     }
   });
-  window.addEventListener('click', (event) => {
+  let dblclickLoading = false;
+  window.addEventListener('dblclick', (event) => {
     // eslint-disable-next-line prefer-const
-    for (let { selector, text } of tips.click) {
-      if (!(event.target as HTMLElement)?.closest(selector)) continue;
-      text = randomSelection(text);
-      text = (text as string).replace(
-        '{text}',
-        (event.target as HTMLElement).innerText,
-      );
-      showMessage(text, 4000, 8);
-      return;
+    console.info('>>> dblclick', event);
+
+    // 只有在 div#WENKO__CONTAINER-ROOT 的 shadow dom 中的元素才触发
+    const target = event.target as HTMLElement;
+    if (!target) return;
+    
+    // 检查元素是否在指定容器内，兼容没有 closest 方法的情况
+    let isInContainer = false;
+    if (target.closest) {
+      // 使用 closest 方法（现代浏览器）
+      isInContainer = !!target.closest('#WENKO__CONTAINER-ROOT');
+    } else {
+      // 降级方案：手动遍历父元素
+      let current: HTMLElement | null = target;
+      while (current) {
+        if (current.id === 'WENKO__CONTAINER-ROOT') {
+          isInContainer = true;
+          break;
+        }
+        current = current.parentElement;
+      }
     }
+    
+    if (!isInContainer) return;
+
+    if (dblclickLoading) return;
+    dblclickLoading = true;
+    getKanbanDaily('随便说点什么，冷笑话也行', str => {
+      showSSEMessage(str, 'wenko-kanban_daily');
+    }, str => {
+      showSSEMessage(str, 'wenko-kanban_daily-loading');
+    }, () => {
+      dblclickLoading = false;
+    })
   });
   window.addEventListener('live2d:hoverbody', () => {
+    console.info('>>> live2d:hoverbody');
     const text = randomSelection(tips.message.hoverBody);
     showMessage(text, 4000, 8, false);
   });
   window.addEventListener('live2d:tapbody', () => {
+    console.info('>>> live2d:tapbody');
     const text = randomSelection(tips.message.tapBody);
     showMessage(text, 4000, 9);
   });
@@ -180,7 +207,8 @@ function registerEventListener(tips: Tips) {
 1. 如果是代码报错，请尝试解析并给出解决办法；
 2. 如果是普通代码，请解释其意义。
 目标解析内容：${text}`
-    getKeywordClassification(text, (str) => {
+    return
+    getKanbanDaily(text, (str) => {
       showSSEMessage(str, 'wenko-keyword_classification');      
     }, str => {
       showSSEMessage(str, 'wenko-keyword_classification-loading');
