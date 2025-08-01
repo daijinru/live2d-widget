@@ -201,17 +201,10 @@ function registerEventListener(tips: Tips) {
   // 监听自定义事件 wenko-highlight
   window.addEventListener('wenko-highlight', (event: any) => {
     let text = event.detail
-    // TODO
-    text = `解析此文本。
-请判断是否代码类型，如果是，走以下判断：
-1. 如果是代码报错，请尝试解析并给出解决办法；
-2. 如果是普通代码，请解释其意义。
-目标解析内容：${text}`
-    return
     getKanbanDaily(text, (str) => {
-      showSSEMessage(str, 'wenko-keyword_classification');      
+      showSSEMessage(str, 'wenko-code_explain');      
     }, str => {
-      showSSEMessage(str, 'wenko-keyword_classification-loading');
+      showSSEMessage(str, 'wenko-code_explain-loading');
     })
   });
 
