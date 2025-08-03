@@ -4,7 +4,7 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { getKanbanDaily, } from './conversation.js';
+import { getKanbanDaily, getSearch, saveText, } from './conversation.js';
 function registerEventListener(tips) {
     var _a;
     let userAction = false;
@@ -105,12 +105,30 @@ function registerEventListener(tips) {
         if (!document.hidden)
             showMessage(tips.message.visibilitychange, 6000, 9);
     });
-    window.addEventListener('wenko-highlight', (event) => {
+    window.addEventListener('wenko_highlight', (event) => {
         let text = event.detail;
-        getKanbanDaily(text, (str) => {
-            showSSEMessage(str, 'wenko-code_explain');
+        getSearch(text, (str) => {
+            if (!str || !Array.isArray(str))
+                return;
+            const merged = `
+[kanban_daily]
+这是原文：${text},
+这是有关记忆：${str[0].content},
+帮我总结。
+`;
+            getKanbanDaily(merged, str => {
+                showSSEMessage(str, 'wenko_highlight');
+            }, str => {
+                showSSEMessage(str, 'wenko_highlight_loading');
+            });
+        });
+    });
+    window.addEventListener('wenko_saveText', (event) => {
+        let text = event.detail;
+        saveText(text, (str) => {
+            showSSEMessage(str, 'wenko_saveText');
         }, str => {
-            showSSEMessage(str, 'wenko-code_explain-loading');
+            showSSEMessage(str, 'wenko_saveText_loading');
         });
     });
     const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;

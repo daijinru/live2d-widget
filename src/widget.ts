@@ -199,12 +199,31 @@ function registerEventListener(tips: Tips) {
   });
 
   // 监听自定义事件 wenko-highlight
-  window.addEventListener('wenko-highlight', (event: any) => {
+  window.addEventListener('wenko_highlight', (event: any) => {
     let text = event.detail
-    getKanbanDaily(text, (str) => {
-      showSSEMessage(str, 'wenko-code_explain');      
+    getSearch(text, (str) => {
+      if (!str || !Array.isArray(str)) return;
+      const merged = `
+[kanban_daily]
+这是原文：${text},
+这是有关记忆：${str[0].content},
+帮我总结。
+`
+      getKanbanDaily(merged, str => {
+        showSSEMessage(str, 'wenko_highlight');
+      }, str => {
+        showSSEMessage(str, 'wenko_highlight_loading');
+      })
+
+    })
+  });
+
+  window.addEventListener('wenko_saveText', (event: any) => {
+    let text = event.detail
+    saveText(text, (str) => {
+      showSSEMessage(str, 'wenko_saveText');
     }, str => {
-      showSSEMessage(str, 'wenko-code_explain-loading');
+      showSSEMessage(str, 'wenko_saveText_loading');
     })
   });
 

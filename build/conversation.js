@@ -2,7 +2,7 @@ import { fetchEventSource } from "https://esm.sh/@microsoft/fetch-event-source";
 import { generateMsgId } from "./utils.js";
 export const getKanbanDaily = (text, callback, loadingCallback, doneCallback) => {
     let interval = setInterval(() => {
-        loadingCallback('.');
+        loadingCallback && loadingCallback('.');
     }, 1000);
     let out = '';
     setTimeout(() => {
@@ -60,93 +60,57 @@ export const getWeightedTexts = (text) => {
 };
 export const getSearch = (text, callback, loadingCallback) => {
     let interval = setInterval(() => {
-        loadingCallback('.');
+        loadingCallback && loadingCallback('.');
     }, 1000);
     const weightedTexts = getWeightedTexts(text);
-    fetchEventSource('http://localhost:8080/search', {
-        method: 'POST',
+    fetch("http://localhost:8080/search", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             texts: weightedTexts,
         }),
-        onopen: (res) => {
-            console.log('open', res);
-            if (res.ok)
-                return Promise.resolve();
-        },
-        onmessage: (line) => {
-            if (interval) {
-                clearInterval(interval);
-                interval = null;
-            }
-            try {
-                if (line.event !== 'text')
-                    return;
-                const data = JSON.parse(line.data);
-                if (data.type !== 'text')
-                    return;
-                const payload = data.payload;
-                if (payload.type !== 'text')
-                    return;
-                callback(payload.content);
-            }
-            catch (error) {
-                console.error(error);
-            }
-        },
-        onclose: () => {
-            console.log('close');
-        },
-        onerror: (err) => {
-            console.log('error', err);
-        },
+    })
+        .then((res) => res.json())
+        .then((data) => {
+        interval && clearInterval(interval);
+        callback(data);
+    })
+        .catch(err => {
+        console.error('❌ 搜索失败', err);
+        interval && clearInterval(interval);
+        callback('😂 Search error');
     });
 };
 export const saveText = (text, callback, loadingCallback) => {
     let interval = setInterval(() => {
-        loadingCallback('.');
+        loadingCallback && loadingCallback('.');
     }, 1000);
     const weightedTexts = getWeightedTexts(text);
-    fetchEventSource('http://localhost:8080/generate', {
-        method: 'POST',
+    fetch("http://localhost:8080/generate", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             texts: weightedTexts,
         }),
-        onopen: (res) => {
-            console.log('open', res);
-            if (res.ok)
-                return Promise.resolve();
-        },
-        onmessage: (line) => {
-            if (interval) {
-                clearInterval(interval);
-                interval = null;
-            }
-            try {
-                if (line.event !== 'text')
-                    return;
-                const data = JSON.parse(line.data);
-                if (data.type !== 'text')
-                    return;
-                const payload = data.payload;
-                if (payload.type !== 'text')
-                    return;
-                callback(payload.content);
-            }
-            catch (error) {
-                console.error(error);
-            }
-        },
-        onclose: () => {
-            console.info('save success');
-        },
-        onerror: (err) => {
-            console.log('error', err);
-        },
+    })
+        .then((res) => res.json())
+        .then((res) => {
+        interval && clearInterval(interval);
+        if (res.id) {
+            const text = `😊 Generated [id ${res.id}]`;
+            callback(text);
+        }
+        else {
+            callback('😂 Save Text failed');
+        }
+    })
+        .catch(err => {
+        console.error('❌ 生成向量失败', err);
+        interval && clearInterval(interval);
+        callback('😂 Save Text error');
     });
 };
