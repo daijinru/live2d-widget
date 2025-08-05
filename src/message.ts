@@ -73,6 +73,11 @@ function showSSEMessage(text: string, id: string) {
   const tips = shadowRoot.getElementById('waifu-tips');
   if (!tips) return;
 
+  // 滚动 tips 到最底部，使用异步确保内容更新后滚动
+  setTimeout(() => {
+    tips.scrollTop = tips.scrollHeight;
+  }, 0);
+
   // 检查当前的 sse id
   const currentSSEId = tips.getAttribute('data-sse-id');
   if (currentSSEId === id) {

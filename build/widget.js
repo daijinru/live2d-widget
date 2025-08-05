@@ -4,7 +4,7 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { getKanbanDaily, getSearch, saveText, } from './conversation.js';
+import { getKanbanDaily, saveText, } from './conversation.js';
 function registerEventListener(tips) {
     var _a;
     let userAction = false;
@@ -75,7 +75,7 @@ function registerEventListener(tips) {
         if (dblclickLoading)
             return;
         dblclickLoading = true;
-        getKanbanDaily('随便说点什么，冷笑话也行', str => {
+        getKanbanDaily('随便说点什么，大百科冷笑话尤佳', str => {
             showSSEMessage(str, 'wenko-kanban_daily');
         }, str => {
             showSSEMessage(str, 'wenko-kanban_daily-loading');
@@ -107,20 +107,10 @@ function registerEventListener(tips) {
     });
     window.addEventListener('wenko_highlight', (event) => {
         let text = event.detail;
-        getSearch(text, (str) => {
-            if (!str || !Array.isArray(str))
-                return;
-            const merged = `
-[kanban_daily]
-这是原文：${text},
-这是有关记忆：${str[0].content},
-帮我总结。
-`;
-            getKanbanDaily(merged, str => {
-                showSSEMessage(str, 'wenko_highlight');
-            }, str => {
-                showSSEMessage(str, 'wenko_highlight_loading');
-            });
+        getKanbanDaily(text, str => {
+            showSSEMessage(str, 'wenko_highlight');
+        }, str => {
+            showSSEMessage(str, 'wenko_highlight_loading');
         });
     });
     window.addEventListener('wenko_saveText', (event) => {

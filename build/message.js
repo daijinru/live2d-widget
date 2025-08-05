@@ -9,6 +9,9 @@ function showSSEMessage(text, id) {
     const tips = shadowRoot.getElementById('waifu-tips');
     if (!tips)
         return;
+    setTimeout(() => {
+        tips.scrollTop = tips.scrollHeight;
+    }, 0);
     const currentSSEId = tips.getAttribute('data-sse-id');
     if (currentSSEId === id) {
         tips.innerHTML += text;

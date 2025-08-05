@@ -166,7 +166,7 @@ function registerEventListener(tips: Tips) {
 
     if (dblclickLoading) return;
     dblclickLoading = true;
-    getKanbanDaily('随便说点什么，冷笑话也行', str => {
+    getKanbanDaily('随便说点什么，大百科冷笑话尤佳', str => {
       showSSEMessage(str, 'wenko-kanban_daily');
     }, str => {
       showSSEMessage(str, 'wenko-kanban_daily-loading');
@@ -201,21 +201,25 @@ function registerEventListener(tips: Tips) {
   // 监听自定义事件 wenko-highlight
   window.addEventListener('wenko_highlight', (event: any) => {
     let text = event.detail
-    getSearch(text, (str) => {
-      if (!str || !Array.isArray(str)) return;
-      const merged = `
-[kanban_daily]
-这是原文：${text},
-这是有关记忆：${str[0].content},
-帮我总结。
-`
-      getKanbanDaily(merged, str => {
-        showSSEMessage(str, 'wenko_highlight');
-      }, str => {
-        showSSEMessage(str, 'wenko_highlight_loading');
-      })
-
+    getKanbanDaily(text, str => {
+      showSSEMessage(str, 'wenko_highlight');
+    }, str => {
+      showSSEMessage(str, 'wenko_highlight_loading');
     })
+
+    // TODO 这里应作为 task_flow 指定的工具被执行，例如 tool_get_relations
+    // getSearch(text, (str) => {
+    //   let merged = `这是指定解析文本：${text}`
+    //   if (str && Array.isArray(str)) {
+    //     merged += `，这是关联上下文：${str[0].content}。`
+    //   }
+    //   merged += '在解析给定文本时，如果存在关联上下文，应将其纳入处理范围，并根据上下文进行语义补全与判断。如果不存在，则仅对给定文本进行处理。'
+    //   getKanbanDaily(merged, str => {
+    //     showSSEMessage(str, 'wenko_highlight');
+    //   }, str => {
+    //     showSSEMessage(str, 'wenko_highlight_loading');
+    //   })
+    // })
   });
 
   window.addEventListener('wenko_saveText', (event: any) => {
