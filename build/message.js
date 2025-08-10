@@ -1,7 +1,7 @@
 let messageTimer = null;
 function showMessage(text, timeout, priority, override = true) {
 }
-function showSSEMessage(text, id) {
+function showSSEMessage(text, id, timeout = 60000) {
     var _a;
     const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
     if (!shadowRoot)

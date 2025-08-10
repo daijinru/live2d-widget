@@ -9,11 +9,12 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { fa_child } from './icons.js';
 import {
   getKanbanDaily,
+  getDaily,
   getSearch,
-  saveText,
+  saveHightlightText as saveText,
+  saveDaily,
 } from './conversation.js';
 interface Tips {
   /**
@@ -166,10 +167,10 @@ function registerEventListener(tips: Tips) {
 
     if (dblclickLoading) return;
     dblclickLoading = true;
-    getKanbanDaily('随便说点什么，大百科冷笑话尤佳', str => {
-      showSSEMessage(str, 'wenko-kanban_daily');
+    getDaily(str => {
+      showSSEMessage(str, 'wenko-daily');
     }, str => {
-      showSSEMessage(str, 'wenko-kanban_daily-loading');
+      showSSEMessage(str, 'wenko-daily-loading');
     }, () => {
       dblclickLoading = false;
     })
@@ -298,6 +299,9 @@ async function loadWidget(config: Config) {
     // })
     
     // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
+    saveDaily(message => {
+      showSSEMessage(message, 'wenko_saveDaily');
+    })
   }
   const model = await ModelManager.initCheck(config, models);
   await model.loadModel('');

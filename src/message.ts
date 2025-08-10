@@ -66,7 +66,7 @@ function showMessage(
  * @param {string} text - Text fragment to display or append.
  * @param {string} id - Unique identifier for this SSE message session.
  */
-function showSSEMessage(text: string, id: string) {
+function showSSEMessage(text: string, id: string, timeout: number = 60000) {
   // 从 shadow dom 中获取 tips 元素
   const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
   if (!shadowRoot) return;

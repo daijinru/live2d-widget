@@ -4,7 +4,7 @@ import { randomSelection } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
-import { getKanbanDaily, saveText, } from './conversation.js';
+import { getKanbanDaily, getDaily, saveHightlightText as saveText, saveDaily, } from './conversation.js';
 function registerEventListener(tips) {
     var _a;
     let userAction = false;
@@ -75,10 +75,10 @@ function registerEventListener(tips) {
         if (dblclickLoading)
             return;
         dblclickLoading = true;
-        getKanbanDaily('随便说点什么，大百科冷笑话尤佳', str => {
-            showSSEMessage(str, 'wenko-kanban_daily');
+        getDaily(str => {
+            showSSEMessage(str, 'wenko-daily');
         }, str => {
-            showSSEMessage(str, 'wenko-kanban_daily-loading');
+            showSSEMessage(str, 'wenko-daily-loading');
         }, () => {
             dblclickLoading = false;
         });
@@ -166,6 +166,9 @@ async function loadWidget(config) {
         tips = await response.json();
         models = tips.models;
         registerEventListener(tips);
+        saveDaily(message => {
+            showSSEMessage(message, 'wenko_saveDaily');
+        });
     }
     const model = await ModelManager.initCheck(config, models);
     await model.loadModel('');
