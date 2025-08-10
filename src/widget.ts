@@ -5,7 +5,7 @@
 
 import { ModelManager, Config, ModelList } from './model.js';
 import { showMessage, showSSEMessage, welcomeMessage, Time } from './message.js';
-import { randomSelection } from './utils.js';
+import { randomSelection, writeOptions, readOptions, } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
@@ -269,6 +269,17 @@ function getShadowRootMounted() {
  * @param {Config} config - Waifu configuration.
  */
 async function loadWidget(config: Config) {
+  window.addEventListener('wenko_popup', (event: any) => {
+    console.info('>>> wenko_popup', event);
+    writeOptions(event.detail);
+  })
+
+  const options = readOptions();
+  if (options?.pauseUse) {
+    console.info('<wenko> 暂停使用');
+    return;
+  }
+
   localStorage.removeItem('waifu-display');
   sessionStorage.removeItem('waifu-message-priority');
   // 挂载到 shadow dom 容器
@@ -299,9 +310,13 @@ async function loadWidget(config: Config) {
     // })
     
     // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
-    saveDaily(message => {
-      // showSSEMessage(message, 'wenko_saveDaily');
-    })
+
+    const options = readOptions();
+    if (!options?.pauseRecord) {
+      saveDaily(message => {
+        showSSEMessage(message, 'wenko_saveDaily');
+      })
+    }
   }
   const model = await ModelManager.initCheck(config, models);
   await model.loadModel('');

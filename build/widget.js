@@ -1,6 +1,6 @@
 import { ModelManager } from './model.js';
 import { showMessage, showSSEMessage } from './message.js';
-import { randomSelection } from './utils.js';
+import { randomSelection, writeOptions, readOptions, } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import registerDrag from './drag.js';
@@ -149,6 +149,15 @@ function getShadowRootMounted() {
 }
 async function loadWidget(config) {
     var _a;
+    window.addEventListener('wenko_popup', (event) => {
+        console.info('>>> wenko_popup', event);
+        writeOptions(event.detail);
+    });
+    const options = readOptions();
+    if (options === null || options === void 0 ? void 0 : options.pauseUse) {
+        console.info('<wenko> 暂停使用');
+        return;
+    }
     localStorage.removeItem('waifu-display');
     sessionStorage.removeItem('waifu-message-priority');
     const mounted = getShadowRootMounted();
@@ -166,8 +175,12 @@ async function loadWidget(config) {
         tips = await response.json();
         models = tips.models;
         registerEventListener(tips);
-        saveDaily(message => {
-        });
+        const options = readOptions();
+        if (!(options === null || options === void 0 ? void 0 : options.pauseRecord)) {
+            saveDaily(message => {
+                showSSEMessage(message, 'wenko_saveDaily');
+            });
+        }
     }
     const model = await ModelManager.initCheck(config, models);
     await model.loadModel('');

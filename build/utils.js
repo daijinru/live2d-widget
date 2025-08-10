@@ -48,4 +48,15 @@ export const getLocalStorage = (key) => {
     }
     return null;
 };
+export const writeOptions = (options) => {
+    const oldOptions = getLocalStorage('options');
+    if (oldOptions) {
+        options = Object.assign(Object.assign({}, oldOptions), options);
+    }
+    console.info('<wenko> 写入选项:', options);
+    setLocalStorage('options', options, 3600 * 24 * 30);
+};
+export const readOptions = () => {
+    return getLocalStorage('options');
+};
 export { randomSelection, loadExternalResource, randomOtherOption, };

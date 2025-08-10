@@ -82,6 +82,23 @@ export const getLocalStorage = (key: string) => {
   return null;
 }
 
+/**
+ * 一个用于读写 live2d-widget-options 的方法
+ */
+export const writeOptions = (options: any) => {
+  // 写入前检查是否已存在，如果存在则覆写
+  const oldOptions = getLocalStorage('options');
+  if (oldOptions) {
+    options = { ...oldOptions, ...options };
+  }
+  console.info('<wenko> 写入选项:', options);
+  setLocalStorage('options', options, 3600 * 24 * 30);
+}
+export const readOptions = () => {
+  return getLocalStorage('options');
+}
+
+
 export {
   randomSelection,
   loadExternalResource,
