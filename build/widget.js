@@ -167,7 +167,6 @@ async function loadWidget(config) {
         models = tips.models;
         registerEventListener(tips);
         saveDaily(message => {
-            showSSEMessage(message, 'wenko_saveDaily');
         });
     }
     const model = await ModelManager.initCheck(config, models);

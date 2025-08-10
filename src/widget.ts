@@ -300,7 +300,7 @@ async function loadWidget(config: Config) {
     
     // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
     saveDaily(message => {
-      showSSEMessage(message, 'wenko_saveDaily');
+      // showSSEMessage(message, 'wenko_saveDaily');
     })
   }
   const model = await ModelManager.initCheck(config, models);

@@ -1,4 +1,5 @@
 export const generate = (input) => {
+    const { texts, original = '', } = input;
     return new Promise((resolve, reject) => {
         fetch("http://localhost:8080/generate", {
             method: "POST",
@@ -6,7 +7,8 @@ export const generate = (input) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                texts: input,
+                texts,
+                original,
             }),
         })
             .then((res) => res.json())

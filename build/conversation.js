@@ -115,7 +115,15 @@ export const saveDaily = (callback, loadingCallback) => {
         { Text: location.href, Weight: 0.4 },
         { Text: new Date().getTime().toString(), Weight: 0.3 },
     ];
-    generate(weightedTexts)
+    const original = {
+        title: document.title,
+        url: location.href,
+        time: new Date().getTime().toString(),
+    };
+    generate({
+        texts: weightedTexts,
+        original: JSON.stringify(original),
+    })
         .then(res => {
         clearInterval(interval);
         callback(res);
