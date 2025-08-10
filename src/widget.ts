@@ -140,7 +140,7 @@ function registerEventListener(tips: Tips) {
   let dblclickLoading = false;
   window.addEventListener('dblclick', (event) => {
     // eslint-disable-next-line prefer-const
-    console.info('>>> dblclick', event);
+    // console.info('>>> dblclick', event);
 
     // 只有在 div#WENKO__CONTAINER-ROOT 的 shadow dom 中的元素才触发
     const target = event.target as HTMLElement;
@@ -187,7 +187,6 @@ function registerEventListener(tips: Tips) {
   });
 
   const devtools = () => {};
-  console.log('%c', devtools);
   devtools.toString = () => {
     showMessage(tips.message.console, 6000, 9);
   };
@@ -269,60 +268,65 @@ function getShadowRootMounted() {
  * @param {Config} config - Waifu configuration.
  */
 async function loadWidget(config: Config) {
-  window.addEventListener('wenko_popup', (event: any) => {
-    console.info('>>> wenko_popup', event);
+  window.addEventListener('wenko_popup', async (event: any) => {
+    // console.info('>>> wenko_popup', event);
     writeOptions(event.detail);
-  })
-
-  const options = readOptions();
-  if (options?.pauseUse) {
-    console.info('<wenko> 暂停使用');
-    return;
-  }
-
-  localStorage.removeItem('waifu-display');
-  sessionStorage.removeItem('waifu-message-priority');
-  // 挂载到 shadow dom 容器
-  // const shadowRoot = document.getElementById(config.mounted)?.shadowRoot;
-  const mounted = getShadowRootMounted();
-  mounted.insertAdjacentHTML(
-    'beforeend',
-    `<div id="waifu">
-      <div id="waifu-tips"></div>
-      <div id="waifu-canvas">
-        <canvas id="live2d" width="800" height="800"></canvas>
-      </div>
-      <div id="waifu-tool"></div>
-    </div>`,
-  );
-  let models: ModelList[] = [];
-  let tips: Tips | null;
-  if (config.waifuPath) {
-    const response = await fetch(config.waifuPath);
-    tips = await response.json();
-    models = tips.models;
-    registerEventListener(tips);
-
-    // getKeywordClassification(text => {
-    //   showSSEMessage(text, 'aaa');
-    // }, text => {
-    //   showSSEMessage(text, 'bbb');
-    // })
-    
-    // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
 
     const options = readOptions();
-    if (!options?.pauseRecord) {
-      saveDaily(message => {
-        showSSEMessage(message, 'wenko_saveDaily');
-      })
+    if (options?.pauseUse) {
+      console.info('<wenko> 暂停使用');
+      // 移除 waifu 元素
+      const mounted = getShadowRootMounted();
+      if (mounted) {
+        mounted.innerHTML = '';
+      }
+      return;
     }
-  }
-  const model = await ModelManager.initCheck(config, models);
-  await model.loadModel('');
-  new ToolsManager(model, config, tips).registerTools();
-  if (config.drag) registerDrag();
-  document.getElementById('waifu')?.classList.add('waifu-active');
+
+    localStorage.removeItem('waifu-display');
+    sessionStorage.removeItem('waifu-message-priority');
+    // 挂载到 shadow dom 容器
+    // const shadowRoot = document.getElementById(config.mounted)?.shadowRoot;
+    const mounted = getShadowRootMounted();
+    mounted.insertAdjacentHTML(
+      'beforeend',
+      `<div id="waifu">
+        <div id="waifu-tips"></div>
+        <div id="waifu-canvas">
+          <canvas id="live2d" width="800" height="800"></canvas>
+        </div>
+        <div id="waifu-tool"></div>
+      </div>`,
+    );
+    let models: ModelList[] = [];
+    let tips: Tips | null;
+    if (config.waifuPath) {
+      const response = await fetch(config.waifuPath);
+      tips = await response.json();
+      models = tips.models;
+      registerEventListener(tips);
+
+      // getKeywordClassification(text => {
+      //   showSSEMessage(text, 'aaa');
+      // }, text => {
+      //   showSSEMessage(text, 'bbb');
+      // })
+      
+      // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
+
+      const options = readOptions();
+      if (!options?.pauseRecord) {
+        saveDaily(message => {
+          showSSEMessage(message, 'wenko_saveDaily');
+        })
+      }
+    }
+    const model = await ModelManager.initCheck(config, models);
+    await model.loadModel('');
+    new ToolsManager(model, config, tips).registerTools();
+    if (config.drag) registerDrag();
+    document.getElementById('waifu')?.classList.add('waifu-active');
+  })
 }
 
 /**

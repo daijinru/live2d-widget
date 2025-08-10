@@ -52,7 +52,6 @@ function registerEventListener(tips) {
     });
     let dblclickLoading = false;
     window.addEventListener('dblclick', (event) => {
-        console.info('>>> dblclick', event);
         const target = event.target;
         if (!target)
             return;
@@ -94,7 +93,6 @@ function registerEventListener(tips) {
         showMessage(text, 4000, 9);
     });
     const devtools = () => { };
-    console.log('%c', devtools);
     devtools.toString = () => {
         showMessage(tips.message.console, 6000, 9);
     };
@@ -148,46 +146,49 @@ function getShadowRootMounted() {
     return null;
 }
 async function loadWidget(config) {
-    var _a;
-    window.addEventListener('wenko_popup', (event) => {
-        console.info('>>> wenko_popup', event);
+    window.addEventListener('wenko_popup', async (event) => {
+        var _a;
         writeOptions(event.detail);
-    });
-    const options = readOptions();
-    if (options === null || options === void 0 ? void 0 : options.pauseUse) {
-        console.info('<wenko> 暂停使用');
-        return;
-    }
-    localStorage.removeItem('waifu-display');
-    sessionStorage.removeItem('waifu-message-priority');
-    const mounted = getShadowRootMounted();
-    mounted.insertAdjacentHTML('beforeend', `<div id="waifu">
-      <div id="waifu-tips"></div>
-      <div id="waifu-canvas">
-        <canvas id="live2d" width="800" height="800"></canvas>
-      </div>
-      <div id="waifu-tool"></div>
-    </div>`);
-    let models = [];
-    let tips;
-    if (config.waifuPath) {
-        const response = await fetch(config.waifuPath);
-        tips = await response.json();
-        models = tips.models;
-        registerEventListener(tips);
         const options = readOptions();
-        if (!(options === null || options === void 0 ? void 0 : options.pauseRecord)) {
-            saveDaily(message => {
-                showSSEMessage(message, 'wenko_saveDaily');
-            });
+        if (options === null || options === void 0 ? void 0 : options.pauseUse) {
+            console.info('<wenko> 暂停使用');
+            const mounted = getShadowRootMounted();
+            if (mounted) {
+                mounted.innerHTML = '';
+            }
+            return;
         }
-    }
-    const model = await ModelManager.initCheck(config, models);
-    await model.loadModel('');
-    new ToolsManager(model, config, tips).registerTools();
-    if (config.drag)
-        registerDrag();
-    (_a = document.getElementById('waifu')) === null || _a === void 0 ? void 0 : _a.classList.add('waifu-active');
+        localStorage.removeItem('waifu-display');
+        sessionStorage.removeItem('waifu-message-priority');
+        const mounted = getShadowRootMounted();
+        mounted.insertAdjacentHTML('beforeend', `<div id="waifu">
+        <div id="waifu-tips"></div>
+        <div id="waifu-canvas">
+          <canvas id="live2d" width="800" height="800"></canvas>
+        </div>
+        <div id="waifu-tool"></div>
+      </div>`);
+        let models = [];
+        let tips;
+        if (config.waifuPath) {
+            const response = await fetch(config.waifuPath);
+            tips = await response.json();
+            models = tips.models;
+            registerEventListener(tips);
+            const options = readOptions();
+            if (!(options === null || options === void 0 ? void 0 : options.pauseRecord)) {
+                saveDaily(message => {
+                    showSSEMessage(message, 'wenko_saveDaily');
+                });
+            }
+        }
+        const model = await ModelManager.initCheck(config, models);
+        await model.loadModel('');
+        new ToolsManager(model, config, tips).registerTools();
+        if (config.drag)
+            registerDrag();
+        (_a = document.getElementById('waifu')) === null || _a === void 0 ? void 0 : _a.classList.add('waifu-active');
+    });
 }
 function initWidget(config) {
     if (typeof config === 'string') {
