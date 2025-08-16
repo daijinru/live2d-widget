@@ -61,6 +61,7 @@ function loadExternalResource(url, type) {
   // For detailed usage of configuration options, see README.en.md
   // 配置选项的具体用法见 README.md
   // 将会被挂载到 wenko 插件提供的 shadow dom 容器
+  console.info('<wenko> 准备执行 initWidget')
   initWidget({
     waifuPath: live2d_path + 'waifu-tips.json',
     // cdnPath: 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/',

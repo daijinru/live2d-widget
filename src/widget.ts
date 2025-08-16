@@ -268,65 +268,34 @@ function getShadowRootMounted() {
  * @param {Config} config - Waifu configuration.
  */
 async function loadWidget(config: Config) {
-  window.addEventListener('wenko_popup', async (event: any) => {
-    // console.info('>>> wenko_popup', event);
-    writeOptions(event.detail);
-
-    const options = readOptions();
-    if (options?.pauseUse) {
-      console.info('<wenko> 暂停使用');
-      // 移除 waifu 元素
-      const mounted = getShadowRootMounted();
-      if (mounted) {
-        mounted.innerHTML = '';
-      }
-      return;
-    }
-
-    localStorage.removeItem('waifu-display');
-    sessionStorage.removeItem('waifu-message-priority');
-    // 挂载到 shadow dom 容器
-    // const shadowRoot = document.getElementById(config.mounted)?.shadowRoot;
-    const mounted = getShadowRootMounted();
-    mounted.insertAdjacentHTML(
-      'beforeend',
-      `<div id="waifu">
-        <div id="waifu-tips"></div>
-        <div id="waifu-canvas">
-          <canvas id="live2d" width="800" height="800"></canvas>
-        </div>
-        <div id="waifu-tool"></div>
-      </div>`,
-    );
-    let models: ModelList[] = [];
-    let tips: Tips | null;
-    if (config.waifuPath) {
-      const response = await fetch(config.waifuPath);
-      tips = await response.json();
-      models = tips.models;
-      registerEventListener(tips);
-
-      // getKeywordClassification(text => {
-      //   showSSEMessage(text, 'aaa');
-      // }, text => {
-      //   showSSEMessage(text, 'bbb');
-      // })
-      
-      // showMessage(welcomeMessage(tips.time, tips.message.welcome, tips.message.referrer), 7000, 11);
-
-      const options = readOptions();
-      if (!options?.pauseRecord) {
-        saveDaily(message => {
-          showSSEMessage(message, 'wenko_saveDaily');
-        })
-      }
-    }
-    const model = await ModelManager.initCheck(config, models);
-    await model.loadModel('');
-    new ToolsManager(model, config, tips).registerTools();
-    if (config.drag) registerDrag();
-    document.getElementById('waifu')?.classList.add('waifu-active');
-  })
+  localStorage.removeItem('waifu-display');
+  sessionStorage.removeItem('waifu-message-priority');
+  // 挂载到 shadow dom 容器
+  // const shadowRoot = document.getElementById(config.mounted)?.shadowRoot;
+  const mounted = getShadowRootMounted();
+  mounted.insertAdjacentHTML(
+    'beforeend',
+    `<div id="waifu">
+      <div id="waifu-tips"></div>
+      <div id="waifu-canvas">
+        <canvas id="live2d" width="800" height="800"></canvas>
+      </div>
+      <div id="waifu-tool"></div>
+    </div>`,
+  );
+  let models: ModelList[] = [];
+  let tips: Tips | null;
+  if (config.waifuPath) {
+    const response = await fetch(config.waifuPath);
+    tips = await response.json();
+    models = tips.models;
+    registerEventListener(tips);
+  }
+  const model = await ModelManager.initCheck(config, models);
+  await model.loadModel('');
+  new ToolsManager(model, config, tips).registerTools();
+  // if (config.drag) registerDrag();
+  document.getElementById('waifu')?.classList.add('waifu-active');
 }
 
 /**
@@ -334,12 +303,12 @@ async function loadWidget(config: Config) {
  * @param {string | Config} config - Waifu configuration or configuration path.
  */
 function initWidget(config: string | Config) {
+  console.info('<wenko> initWidget', config);
   if (typeof config === 'string') {
     logger.error('Your config for Live2D initWidget is outdated. Please refer to https://github.com/stevenjoezhang/live2d-widget/blob/master/dist/autoload.js');
     return;
   }
   logger.setLevel(config.logLevel);
-
   loadWidget(config as Config);
 
   // const mounted = getShadowRootMounted();
