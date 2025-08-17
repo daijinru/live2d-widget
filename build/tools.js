@@ -1,16 +1,17 @@
-import { fa_comment, fa_camera_retro } from './icons.js';
+import { fa_comment, fa_paper_plane } from './icons.js';
 class ToolsManager {
     constructor(model, config, tips) {
         this.config = config;
         this.tools = {
-            hitokoto: {
+            comment: {
                 icon: fa_comment,
                 callback: async () => {
                 }
             },
-            photo: {
-                icon: fa_camera_retro,
+            plane: {
+                icon: fa_paper_plane,
                 callback: () => {
+                    window.electronAPI.send('wenko_shortcut', { action: 'open' });
                 }
             },
         };

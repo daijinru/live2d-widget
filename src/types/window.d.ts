@@ -18,4 +18,10 @@ interface Window {
    * @type {(config: Config) => void}
    */
   initWidget: (config: Config) => void;
+
+  electronAPI: {
+    send(channel: string, ...args: any[]): void;
+    invoke?(channel: string, ...args: any[]): Promise<any>;
+    // 根据你调用 electronAPI 的具体接口补充声明
+  };
 }

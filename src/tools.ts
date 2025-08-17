@@ -45,29 +45,16 @@ class ToolsManager {
   constructor(model: ModelManager, config: Config, tips: Tips) {
     this.config = config;
     this.tools = {
-      hitokoto: {
+      comment: {
         icon: fa_comment,
         callback: async () => {
           // Add hitokoto.cn API
         }
       },
-      photo: {
-        icon: fa_camera_retro,
+      plane: {
+        icon: fa_paper_plane,
         callback: () => {
-          // const message = tips.message.photo;
-          // showMessage(message, 6000, 9);
-          // const canvas = document.getElementById('live2d') as HTMLCanvasElement;
-          // if (!canvas) return;
-          // const imageUrl = canvas.toDataURL();
-
-          // const link = document.createElement('a');
-          // link.style.display = 'none';
-          // link.href = imageUrl;
-          // link.download = 'live2d-photo.png';
-
-          // document.body.appendChild(link);
-          // link.click();
-          // document.body.removeChild(link);
+          window.electronAPI.send('wenko_shortcut', {action: 'open'});
         }
       },
     };

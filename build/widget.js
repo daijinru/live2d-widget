@@ -3,7 +3,7 @@ import { showMessage, showSSEMessage } from './message.js';
 import { randomSelection, } from './utils.js';
 import { ToolsManager } from './tools.js';
 import logger from './logger.js';
-import { getKanbanDaily, getDaily, saveHightlightText as saveText, } from './conversation.js';
+import { getKanbanDaily, saveHightlightText as saveText, } from './conversation.js';
 function registerEventListener(tips) {
     let userAction = false;
     let userActionTimer;
@@ -47,40 +47,6 @@ function registerEventListener(tips) {
             showMessage(text, 4000, 8);
             return;
         }
-    });
-    let dblclickLoading = false;
-    window.addEventListener('dblclick', (event) => {
-        const target = event.target;
-        if (!target)
-            return;
-        let isInContainer = false;
-        if (target.closest) {
-            isInContainer = !!target.closest('#WENKO__CONTAINER-ROOT');
-        }
-        else {
-            let current = target;
-            while (current) {
-                if (current.id === 'WENKO__CONTAINER-ROOT') {
-                    isInContainer = true;
-                    break;
-                }
-                current = current.parentElement;
-            }
-        }
-        if (!isInContainer)
-            return;
-        if (dblclickLoading)
-            return;
-        dblclickLoading = true;
-        getDaily(str => {
-            showSSEMessage(str, 'wenko-daily');
-        }, str => {
-            showSSEMessage(str, 'wenko-daily-loading');
-        }, () => {
-            dblclickLoading = false;
-            const closeStr = '<div class="wenko-tips-close" onclick="this.parentElement.classList.remove(\'waifu-tips-active\')">好的</div>';
-            showSSEMessage(closeStr, 'wenko-daily');
-        });
     });
     window.addEventListener('live2d:hoverbody', () => {
         console.info('>>> live2d:hoverbody');

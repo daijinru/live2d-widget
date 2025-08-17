@@ -137,48 +137,46 @@ function registerEventListener(tips: Tips) {
       return;
     }
   });
-  let dblclickLoading = false;
+
+  // let dblclickLoading = false;
   // 双击事件
-  window.addEventListener('dblclick', (event) => {
-    // eslint-disable-next-line prefer-const
-    // console.info('>>> dblclick', event);
-
-    // 只有在 div#WENKO__CONTAINER-ROOT 的 shadow dom 中的元素才触发
-    const target = event.target as HTMLElement;
-    if (!target) return;
+  // window.addEventListener('dblclick', (event) => {
+  //   // 只有在 div#WENKO__CONTAINER-ROOT 的 shadow dom 中的元素才触发
+  //   const target = event.target as HTMLElement;
+  //   if (!target) return;
     
-    // 检查元素是否在指定容器内，兼容没有 closest 方法的情况
-    let isInContainer = false;
-    if (target.closest) {
-      // 使用 closest 方法（现代浏览器）
-      isInContainer = !!target.closest('#WENKO__CONTAINER-ROOT');
-    } else {
-      // 降级方案：手动遍历父元素
-      let current: HTMLElement | null = target;
-      while (current) {
-        if (current.id === 'WENKO__CONTAINER-ROOT') {
-          isInContainer = true;
-          break;
-        }
-        current = current.parentElement;
-      }
-    }
-    
-    if (!isInContainer) return;
+  //   // 检查元素是否在指定容器内，兼容没有 closest 方法的情况
+  //   let isInContainer = false;
+  //   if (target.closest) {
+  //     // 使用 closest 方法（现代浏览器）
+  //     isInContainer = !!target.closest('#WENKO__CONTAINER-ROOT');
+  //   } else {
+  //     // 降级方案：手动遍历父元素
+  //     let current: HTMLElement | null = target;
+  //     while (current) {
+  //       if (current.id === 'WENKO__CONTAINER-ROOT') {
+  //         isInContainer = true;
+  //         break;
+  //       }
+  //       current = current.parentElement;
+  //     }
+  //   }
+  //   if (!isInContainer) return;
 
-    if (dblclickLoading) return;
-    dblclickLoading = true;
-    getDaily(str => {
-      showSSEMessage(str, 'wenko-daily');
-    }, str => {
-      showSSEMessage(str, 'wenko-daily-loading');
-    }, () => {
-      dblclickLoading = false;
-      // showSSEMessage 添加关闭按钮
-      const closeStr = '<div class="wenko-tips-close" onclick="this.parentElement.classList.remove(\'waifu-tips-active\')">好的</div>';
-      showSSEMessage(closeStr, 'wenko-daily');
-    })
-  });
+  //   if (dblclickLoading) return;
+  //   dblclickLoading = true;
+  //   getDaily(str => {
+  //     showSSEMessage(str, 'wenko-daily');
+  //   }, str => {
+  //     showSSEMessage(str, 'wenko-daily-loading');
+  //   }, () => {
+  //     dblclickLoading = false;
+  //     // showSSEMessage 添加关闭按钮
+  //     const closeStr = '<div class="wenko-tips-close" onclick="this.parentElement.classList.remove(\'waifu-tips-active\')">好的</div>';
+  //     showSSEMessage(closeStr, 'wenko-daily');
+  //   })
+  // });
+
   window.addEventListener('live2d:hoverbody', () => {
     console.info('>>> live2d:hoverbody');
     const text = randomSelection(tips.message.hoverBody);
