@@ -138,6 +138,7 @@ function registerEventListener(tips: Tips) {
     }
   });
   let dblclickLoading = false;
+  // 双击事件
   window.addEventListener('dblclick', (event) => {
     // eslint-disable-next-line prefer-const
     // console.info('>>> dblclick', event);
@@ -173,6 +174,9 @@ function registerEventListener(tips: Tips) {
       showSSEMessage(str, 'wenko-daily-loading');
     }, () => {
       dblclickLoading = false;
+      // showSSEMessage 添加关闭按钮
+      const closeStr = '<div class="wenko-tips-close" onclick="this.parentElement.classList.remove(\'waifu-tips-active\')">好的</div>';
+      showSSEMessage(closeStr, 'wenko-daily');
     })
   });
   window.addEventListener('live2d:hoverbody', () => {
@@ -230,25 +234,6 @@ function registerEventListener(tips: Tips) {
       showSSEMessage(str, 'wenko_saveText_loading');
     })
   });
-
-  const shadowRoot = document.getElementById('WENKO__CONTAINER-ROOT')?.shadowRoot;
-  shadowRoot
-    .getElementById('waifu-tips')
-    .addEventListener('click', function(e) {
-      const tool = this
-      const rect = tool.getBoundingClientRect();
-      // 伪元素区域（右上角20x20px）
-      if (
-        e.clientX >= rect.right - 25 &&
-        e.clientX <= rect.right - 5 &&
-        e.clientY >= rect.top + 5 &&
-        e.clientY <= rect.top + 25
-      ) {
-        // tool.style.display = 'none';
-        shadowRoot
-          .getElementById('waifu-tips').classList.remove('waifu-tips-active');
-      }
-    })
 }
 
 /** 获取 shadow dom 容器中的挂载点 */

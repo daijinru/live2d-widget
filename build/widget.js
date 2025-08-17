@@ -5,7 +5,6 @@ import { ToolsManager } from './tools.js';
 import logger from './logger.js';
 import { getKanbanDaily, getDaily, saveHightlightText as saveText, } from './conversation.js';
 function registerEventListener(tips) {
-    var _a;
     let userAction = false;
     let userActionTimer;
     const messageArray = tips.message.default;
@@ -79,6 +78,8 @@ function registerEventListener(tips) {
             showSSEMessage(str, 'wenko-daily-loading');
         }, () => {
             dblclickLoading = false;
+            const closeStr = '<div class="wenko-tips-close" onclick="this.parentElement.classList.remove(\'waifu-tips-active\')">好的</div>';
+            showSSEMessage(closeStr, 'wenko-daily');
         });
     });
     window.addEventListener('live2d:hoverbody', () => {
@@ -117,20 +118,6 @@ function registerEventListener(tips) {
         }, str => {
             showSSEMessage(str, 'wenko_saveText_loading');
         });
-    });
-    const shadowRoot = (_a = document.getElementById('WENKO__CONTAINER-ROOT')) === null || _a === void 0 ? void 0 : _a.shadowRoot;
-    shadowRoot
-        .getElementById('waifu-tips')
-        .addEventListener('click', function (e) {
-        const tool = this;
-        const rect = tool.getBoundingClientRect();
-        if (e.clientX >= rect.right - 25 &&
-            e.clientX <= rect.right - 5 &&
-            e.clientY >= rect.top + 5 &&
-            e.clientY <= rect.top + 25) {
-            shadowRoot
-                .getElementById('waifu-tips').classList.remove('waifu-tips-active');
-        }
     });
 }
 function getShadowRootMounted() {
